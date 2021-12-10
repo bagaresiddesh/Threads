@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using SimpleFunctions;
 
@@ -9,6 +10,21 @@ namespace ConsoleApp
         static void Main()
         {
             Functions obj = new Functions();
+            FileStream ostrm;
+            StreamWriter writer;
+            TextWriter oldOut = Console.Out;
+            try
+            {
+                ostrm = new FileStream("./Log.txt", FileMode.OpenOrCreate, FileAccess.Write);
+                writer = new StreamWriter(ostrm);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Cannot open Log.txt for writing");
+                Console.WriteLine(e.Message);
+                return;
+            }
+            Console.SetOut(writer);
 
             Console.WriteLine("\nEven numbers upto 1000 : \n");
             obj.Even();
@@ -29,6 +45,15 @@ namespace ConsoleApp
             thread1.Start();
             obj.Even();
 
+            thread1.Abort();
+            thread2.Abort();
+            thread3.Abort();
+
+            Console.SetOut(oldOut);
+            writer.Close();
+            ostrm.Close();
+
+            Console.WriteLine("Log file created!");
             Console.ReadLine();
         }
     }
